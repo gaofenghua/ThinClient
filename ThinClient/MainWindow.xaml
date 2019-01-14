@@ -1,0 +1,205 @@
+﻿<dx:ThemedWindow x:Class="ThinClient.MainWindow" mc:Ignorable="d" Title="MainWindow" Height="700" Width="1250" 
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:dxgi="http://schemas.devexpress.com/winfx/2008/xaml/grid/internal"
+    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:local="clr-namespace:ThinClient" 
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid">
+    <dx:ThemedWindow.DataContext>
+        <local:CustomerView/>
+    </dx:ThemedWindow.DataContext>
+
+    <Window.Resources>
+        <local:CustomerToColorConverter x:Key="CustomerToColorConverter"/>
+        <local:CustomerToHeaderTextConverter x:Key="CustomerToHeaderTextConverter"/>
+
+        <DataTemplate x:Key="cardHeaderTemplate">
+            <Border Margin="1" CornerRadius="5" Background="{Binding Path=(dxg:RowData.RowData).Row, RelativeSource={RelativeSource Self}, Converter={StaticResource CustomerToColorConverter}}">
+                <TextBlock Text="{Binding Path=(dxg:RowData.RowData).Row, RelativeSource={RelativeSource Self}, Converter={StaticResource CustomerToHeaderTextConverter}}" Margin="1" Foreground="White" />
+            </Border>
+        </DataTemplate>
+
+
+        <DataTemplate x:Key="cardRowTemplate1">
+            <Grid x:Name="grid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition SharedSizeGroup="cardRowDescription"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <dxe:ImageEdit x:Name="PART_Editor" Source="{Binding Path=RowData.Row.Photo}" Width="150" Height="150" ShowMenu="False" Stretch="Uniform" Grid.Column="0" Grid.Row="0"
+                              	></dxe:ImageEdit>
+                <dxe:ImageEdit x:Name="PART_Editor2" Source="{Binding Path=RowData.Row.Photo2}" Width="150" Height="150" ShowMenu="False" Stretch="Fill" Grid.Column="1" Grid.Row="0"
+                              	></dxe:ImageEdit>
+
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="cardRowTemplate3">
+            <Grid x:Name="grid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition SharedSizeGroup="cardRowDescription"/>
+                    <ColumnDefinition Width="6"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <dxg:CardCellContentPresenter 
+									x:Name="cell" 
+									Grid.Column="0"
+                                    Grid.ColumnSpan="2" 
+                                    Column="{Binding Path=DataContext.Column, RelativeSource={RelativeSource TemplatedParent}}"
+									Style="{Binding Path=DataContext.Column.ActualCellStyle, RelativeSource={RelativeSource TemplatedParent}}"
+									dxg:GridColumn.NavigationIndex="{Binding Path=DataContext.Column.VisibleIndex, RelativeSource={RelativeSource TemplatedParent}}"/>
+
+
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="cardRowTemplate4">
+            <Grid x:Name="grid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition SharedSizeGroup="cardRowDescription"/>
+                    <ColumnDefinition Width="6"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding Column.HeaderCaption, StringFormat='{}{0}:;'}"> 
+								    <dxg:GridViewHitInfoBase.HitTestAcceptor>
+									    <dxgi:FieldCaptionCardViewHitTestAcceptor/>
+									    </dxg:GridViewHitInfoBase.HitTestAcceptor>
+                </TextBlock>
+                <dxg:CardCellContentPresenter 
+									x:Name="cell" 
+									Grid.Column="1"
+                                    Grid.ColumnSpan="2"
+                                    Column="{Binding Path=DataContext.Column, RelativeSource={RelativeSource TemplatedParent}}"
+									Style="{Binding Path=DataContext.Column.ActualCellStyle, RelativeSource={RelativeSource TemplatedParent}}"
+									dxg:GridColumn.NavigationIndex="{Binding Path=DataContext.Column.VisibleIndex, RelativeSource={RelativeSource TemplatedParent}}"/>
+
+
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="cardRowTemplate2">
+            <Grid x:Name="grid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition SharedSizeGroup="cardRowDescription"/>
+                    <ColumnDefinition Width="6"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <dxe:ImageEdit x:Name="PART_Editor" Source="{Binding Path=RowData.Row.Photo}" Width="150" Height="150" ShowMenu="False" Stretch="Fill" Grid.Column="0" Grid.Row="0"
+                              	></dxe:ImageEdit>
+
+            </Grid>
+        </DataTemplate>
+        <local:CardRowTemplateSelector x:Key="CardRowTemplateSelector" Template1="{StaticResource cardRowTemplate1}" Template2="{StaticResource cardRowTemplate2}" Template3="{StaticResource cardRowTemplate3}"/>
+        <local:CardRowTemplateSelector_Bottom x:Key="CardRowTemplateSelector_Bottom" Template1="{StaticResource cardRowTemplate1}" Template2="{StaticResource cardRowTemplate2}" Template3="{StaticResource cardRowTemplate3}"/>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180*" />
+            <ColumnDefinition Width="453*"/>
+            <ColumnDefinition Width="350" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="300*" />
+            <RowDefinition Height="220" />
+        </Grid.RowDefinitions>
+        <dxb:BarContainerControl ContainerType="Top" Grid.Row="0" Grid.ColumnSpan="3">
+            <dxb:MainMenuControl Caption="Main Menu">
+                <dxb:BarSubItem Content="File">
+                    <dxb:BarButtonItem x:Name="btnNew" Content="New" Glyph="{dx:DXImage Image=New_16x16.png}" />
+                    <dxb:BarButtonItem x:Name="btnOpen" Content="Open" Glyph="{dx:DXImage Image=Open_16x16.png}" />
+                    <dxb:BarButtonItem x:Name="btnClose" Content="Close" Glyph="{dx:DXImage Image=Close_16x16.png}" />
+                </dxb:BarSubItem>
+                <dxb:BarSubItem Content="Edit">
+                    <dxb:BarButtonItem x:Name="btnCut" Content="Cut" Glyph="{dx:DXImage Image=Cut_16x16.png}" />
+                    <dxb:BarButtonItem x:Name="btnCopy" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" />
+                    <dxb:BarButtonItem x:Name="btnPaste" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" />
+                </dxb:BarSubItem>
+            </dxb:MainMenuControl>
+        </dxb:BarContainerControl>
+        <dxb:BarContainerControl ContainerType="Top" Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="2">
+            <dxb:ToolBarControl Caption="File" RotateWhenVertical="True">
+                <dxb:BarButtonItemLink BarItemName="btnNew" />
+                <dxb:BarButtonItemLink BarItemName="btnOpen" />
+                <dxb:BarButtonItemLink BarItemName="btnClose" />
+            </dxb:ToolBarControl>
+            <dxb:ToolBarControl Caption="Edit" RotateWhenVertical="True">
+                <dxb:BarButtonItemLink BarItemName="btnCut" />
+                <dxb:BarButtonItemLink BarItemName="btnCopy" />
+                <dxb:BarButtonItemLink BarItemName="btnPaste" />
+            </dxb:ToolBarControl>
+        </dxb:BarContainerControl>
+        <dxg:TreeListControl Name="myTreeListControl" AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True" Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding Employees}">
+            <dxg:TreeListControl.View>
+                <dxg:TreeListView AllowPerPixelScrolling="False" KeyFieldName="ID" ParentFieldName="ParentID" AutoWidth="False" AllowEditing="False" ShowVerticalLines="False" ShowHorizontalLines="False" ShowIndicator="False" ShowColumnHeaders="False"/>
+            </dxg:TreeListControl.View>
+        </dxg:TreeListControl>
+        <dxg:GridControl Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2" AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 
+                                     ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedEntity}" ShowLoadingPanel="{Binding IsLoading}">
+            <dxg:GridControl.View>
+                <dxg:CardView x:Name="cardView" ShowTotalSummary="False" ShowGroupPanel="False" SeparatorThickness="0"
+                              CardRowTemplateSelector="{StaticResource CardRowTemplateSelector_Bottom}"                         
+                              CardAlignment="Stretch" CardMargin="0,0,0,0" MaxCardCountInRow="1" CardLayout="Columns" AllowEditing="False" ShowColumnHeaders="False" ShowCardExpandButton="False" AllowDateTimeGroupIntervalMenu="False" IsRowCellMenuEnabled="False" IsGroupPanelMenuEnabled="False" IsColumnMenuEnabled="False" IsGroupRowMenuEnabled="False" IsGroupFooterMenuEnabled="False" IsTotalSummaryMenuEnabled="False"/>
+            </dxg:GridControl.View>
+            <dxg:GridColumn FieldName="Photo" IsSmart="True" VisibleIndex="0" Header="P">
+                <dxg:GridColumn.EditSettings>
+                    <dxe:ImageEditSettings Stretch="UniformToFill"/>
+                </dxg:GridColumn.EditSettings>
+                <dxg:GridColumn.CellStyle>
+                    <Style TargetType="dxg:CardCellContentPresenter">
+                        <Setter Property="Width" Value="150"/>
+                        <Setter Property="Height" Value="150"/>
+                    </Style>
+                </dxg:GridColumn.CellStyle>
+            </dxg:GridColumn>
+
+        </dxg:GridControl>
+        <dxg:GridControl Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="1" AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 
+                                     ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedEntity}" ShowLoadingPanel="{Binding IsLoading}" MinWidth="350">
+            <dxg:GridControl.View>
+                <dxg:CardView x:Name="cardView2" CardRowTemplateSelector="{StaticResource CardRowTemplateSelector}"
+                              ShowTotalSummary="False" ShowGroupPanel="False" SeparatorThickness="0"
+                                          CardAlignment="Center" CardMargin="0,0,0,0" MaxCardCountInRow="2" CardLayout="Rows" AllowEditing="False" ShowColumnHeaders="False" ShowCardExpandButton="False" AllowDateTimeGroupIntervalMenu="False" IsRowCellMenuEnabled="False" IsGroupPanelMenuEnabled="False" IsColumnMenuEnabled="False" IsGroupRowMenuEnabled="False" IsGroupFooterMenuEnabled="False" IsTotalSummaryMenuEnabled="False" AllowMoveColumnToDropArea="False" AllowColumnMoving="False" AllowCardResizing="False"/>
+            </dxg:GridControl.View>
+            <dxg:GridColumn FieldName="Photo" IsSmart="True" VisibleIndex="0" FixedWidth="True" Header="">
+                <dxg:GridColumn.EditSettings>
+                    <dxe:ImageEditSettings Stretch="UniformToFill"/>
+                </dxg:GridColumn.EditSettings>
+                <dxg:GridColumn.CellStyle>
+                    <Style TargetType="dxg:CardCellContentPresenter">
+                        <Setter Property="Width" Value="145"/>
+                        <Setter Property="Height" Value="100"/>
+                    </Style>
+                </dxg:GridColumn.CellStyle>
+            </dxg:GridColumn>
+            <dxg:GridColumn FieldName="Name" IsSmart="True" Header=""/>
+            <dxg:GridColumn FieldName="City" IsSmart="True" Header=""/>
+            <dxg:GridColumn FieldName="Birthday" IsSmart="True" Header=""/>
+        </dxg:GridControl>
+        <dxe:ImageEdit Grid.Column="1" Grid.ColumnSpan="1" Grid.Row="1" Grid.RowSpan="1" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Stretch="Fill"/>
+        <Image x:Name="image" Grid.Column="1"/>
+    </Grid>
+</dx:ThemedWindow>
