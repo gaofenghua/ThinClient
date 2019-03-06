@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Data;
 using System.ComponentModel;
+using TC4I_Socket;
 
 namespace ThinClient
 {
@@ -27,6 +28,8 @@ namespace ThinClient
     public partial class MainWindow : DevExpress.Xpf.Core.ThemedWindow
     {
         public static List<myTree> mytree { get; set; }
+
+        private TC4I_Socket_Client client = null;
         public MainWindow()
         {
             InitializeComponent();
@@ -54,6 +57,8 @@ namespace ThinClient
             myTreeListControl.ItemsSource = mytree;
 
             // Button_Click();
+
+            client = new TC4I_Socket_Client(1024,"127.0.0.1",12345,0xFF);
         }
 
         private readonly TaskScheduler _syncContextTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
