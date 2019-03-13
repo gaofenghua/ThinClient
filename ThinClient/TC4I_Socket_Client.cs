@@ -6,25 +6,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using socket.framework.Client;
 using System.Windows;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using DevExpress.Xpf.Grid;
 using ThinClient;
+using TC4I;
 
-namespace TC4I_Socket
+namespace TC4I
 {
-
-    [Serializable]
-    struct Socket_Data
-    {
-        public int Index;
-        public string strRev;
-        public int iTest;
-        public byte[] Photo;
-        public byte[] Photo2;
-    }
     class TC4I_Socket_Client
     {
+        public Socket_Status status;
+        System.Threading.Timer heartbeat_timer = null;
+        int Time_Interval = 3000;
+        int heartbeat = 0;
+        public byte[] heartbeat_package = null;
+
+        public int id = -1;
+        public string server_ip=null;
+        public int server_port = -1;
+
         TcpPackClient client;
         public TC4I_Socket_Client(int receiveBufferSize, string ip, int port, uint headerFlag)
         {
@@ -36,6 +35,15 @@ namespace TC4I_Socket
             client.OnDisconnect += Client_OnDisconnect;
 
             client.Connect(ip, port);
+
+            server_ip = ip;
+            server_port = port;
+
+            Socket_Data heartbeat_data = new Socket_Data();
+            heartbeat_data.Data_Type = (int)Socket_Data_Type.Heartbeat;
+            heartbeat_data.strInfo = "My client name";
+
+            TC4I_Socket.serializeObjToByte(heartbeat_data, out heartbeat_package);
         }
 
         private void Client_OnClose()
@@ -51,29 +59,57 @@ namespace TC4I_Socket
         {
             Console.WriteLine($"pack接收byte[{obj.Length}]");
 
-            string strRev = Encoding.UTF8.GetString(obj);
-            MessageBox.Show(strRev);
-
-            Socket_Data socket_Data;
-            object deserializedObj = null;
-            //deserializeStrToObj(strRev, out deserializedObj);
-            deserializeByteToObj(obj, out deserializedObj);
-            socket_Data = (Socket_Data)deserializedObj;
-
-            List<Customer> customers = CustomerView.Customers;
-            Customer customer = new Customer();
-            customer.Name = socket_Data.strRev;
-            customer.Photo = socket_Data.Photo;
-            customers.Add(customer);
-
-            Task.Factory.StartNew(Begin);
-
-            MessageBox.Show(socket_Data.strRev);
+            Parse_Receive_Data(obj);
         }
+        public void Parse_Receive_Data(byte[] rev)
+        {
+            Socket_Data revData;
+            object deserializedObj = null;
+            TC4I_Socket.deserializeByteToObj(rev, out deserializedObj);
+            revData = (Socket_Data)deserializedObj;
 
+            switch (revData.Data_Type)
+            {
+                case Socket_Data_Type.Heartbeat:
+                    heartbeat = 0;
+                    break;
+                case Socket_Data_Type.Camera_Data:
+                    List<Customer> customers = CustomerView.Customers;
+                    Customer customer = new Customer();
+                    customer.Name = revData.strInfo;
+                    customer.Photo = revData.Photo;
+                    customers.Add(customer);
+
+                    Task.Factory.StartNew(Begin);
+
+                    //MessageBox.Show(revData.strInfo);
+                    break;
+            }
+
+        }
         private void Client_OnConnect(bool obj)
         {
-            Console.WriteLine($"pack连接{obj}");
+            if (obj == false)
+            {
+                status = Socket_Status.Connect_Failed;
+
+                TC4I_Common.PrintLog(0, String.Format("error: Connect failed, server={0}:{1}",server_ip,server_port));
+            }
+            else
+            {
+                status = Socket_Status.Normal;
+
+                TC4I_Common.PrintLog(0, String.Format("Server Connected, server={0}:{1}",server_ip,server_port));
+            }
+
+            if (heartbeat_timer == null)
+            {
+                heartbeat_timer = new Timer(HeartBeat, null, Time_Interval, Timeout.Infinite);
+            }
+            else
+            {
+                heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
+            }
         }
 
         public void Send(byte[] data, int offset, int length)
@@ -92,90 +128,37 @@ namespace TC4I_Socket
             client.Close();
         }
 
-        public bool serializeObjToStr(Object obj, out string serializedStr)
+        public void ReConnect()
         {
-            bool serializeOk = false;
-            serializedStr = "";
-            try
-            {
-                MemoryStream memoryStream = new MemoryStream();
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(memoryStream, obj);
-                serializedStr = System.Convert.ToBase64String(memoryStream.ToArray());
 
-                serializeOk = true;
-            }
-            catch
-            {
-                serializeOk = false;
-            }
-
-            return serializeOk;
         }
-
-        public bool deserializeStrToObj(string serializedStr, out object deserializedObj)
+        public void HeartBeat(object obj)
         {
-            bool deserializeOk = false;
-            deserializedObj = null;
-
-            try
+            if (heartbeat < -5)
             {
-                byte[] restoredBytes = System.Convert.FromBase64String(serializedStr);
-                MemoryStream restoredMemoryStream = new MemoryStream(restoredBytes);
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-                deserializedObj = binaryFormatter.Deserialize(restoredMemoryStream);
-
-                deserializeOk = true;
-            }
-            catch
-            {
-                deserializeOk = false;
+                if (status != Socket_Status.Connecting)
+                {
+                    TC4I_Common.PrintLog(0, String.Format("Warning: Socket Heartbeat failed. Start Reconnect, client.connected = {0}, id={1}.", client.Connected, id));
+                    ReConnect();
+                    heartbeat = 0;
+                    return;
+                }
             }
 
-            return deserializeOk;
+            if (client.Connected == true)
+            {
+                Send(heartbeat_package, 0, heartbeat_package.Length);
+
+                if (id == 20)
+                {
+                    TC4I_Common.PrintLog(2, String.Format("Debugging: HeartBeat sent, client.connected = {0}, status={2}, id={1}.", client.Connected, id, status));
+                }
+            }
+            heartbeat = heartbeat - 1;
+            TC4I_Common.PrintLog(0, String.Format("Heartbeat:"));
+            heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
         }
-
-        public bool serializeObjToByte(Object obj, out byte[] serializedByte)
-        {
-            bool serializeOk = false;
-            serializedByte = null;
-            try
-            {
-                MemoryStream memoryStream = new MemoryStream();
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(memoryStream, obj);
-                serializedByte = memoryStream.ToArray();
-
-                serializeOk = true;
-            }
-            catch
-            {
-                serializeOk = false;
-            }
-
-            return serializeOk;
-        }
-
-        public bool deserializeByteToObj(Byte[] serializedByte, out object deserializedObj)
-        {
-            bool deserializeOk = false;
-            deserializedObj = null;
-
-            try
-            {
-                MemoryStream restoredMemoryStream = new MemoryStream(serializedByte);
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-                deserializedObj = binaryFormatter.Deserialize(restoredMemoryStream);
-
-                deserializeOk = true;
-            }
-            catch
-            {
-                deserializeOk = false;
-            }
-
-            return deserializeOk;
-        }
+ 
 
         private readonly TaskScheduler _syncContextTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
         private void SchedulerWork()
@@ -191,25 +174,11 @@ namespace TC4I_Socket
         }
         private void UpdateTb()
         {
-            MessageBox.Show("Socket UpdateTb");
+            //MessageBox.Show("Socket UpdateTb");
             MainWindow mainwin = (MainWindow)Application.Current.MainWindow;
             CardView myTab = mainwin.cardView;
             myTab.MoveLastRow();
-        }
 
-    }
-
-    class TC4I_Common
-    {
-        public static byte[] ReadImageFile(string path)
-        {
-            FileStream fs = File.OpenRead(path); //OpenRead
-            int filelength = 0;
-            filelength = (int)fs.Length; //获得文件长度 
-            Byte[] image = new Byte[filelength]; //建立一个字节数组 
-            fs.Read(image, 0, filelength); //按字节流读取 
-            fs.Close();
-            return image;
         }
     }
 }

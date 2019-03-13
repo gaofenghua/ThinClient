@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using TC4I_Socket;
+using TC4I;
 
 namespace ThinClient
 {
