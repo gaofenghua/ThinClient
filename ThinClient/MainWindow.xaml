@@ -1,4 +1,4 @@
-﻿<dx:ThemedWindow x:Class="ThinClient.MainWindow" mc:Ignorable="d" Title="MainWindow" Height="700" Width="1250" 
+﻿<dx:ThemedWindow x:Class="ThinClient.MainWindow" mc:Ignorable="d" Title="Thin Client for Integration" Height="700" Width="1250" 
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
@@ -128,19 +128,19 @@
         </Grid.RowDefinitions>
         <dxb:BarContainerControl ContainerType="Top" Grid.Row="0" Grid.ColumnSpan="3">
             <dxb:MainMenuControl Caption="Main Menu">
-                <dxb:BarSubItem Content="File">
-                    <dxb:BarButtonItem x:Name="btnNew" Content="New" Glyph="{dx:DXImage Image=New_16x16.png}" />
+                <dxb:BarSubItem Content="系统">
+                    <dxb:BarButtonItem x:Name="btnNew" Content="更新设备列表" Glyph="{dx:DXImage Image=New_16x16.png}" ItemClick="btnNew_ItemClick"/>
                     <dxb:BarButtonItem x:Name="btnOpen" Content="Open" Glyph="{dx:DXImage Image=Open_16x16.png}" />
                     <dxb:BarButtonItem x:Name="btnClose" Content="Close" Glyph="{dx:DXImage Image=Close_16x16.png}" />
                 </dxb:BarSubItem>
-                <dxb:BarSubItem Content="Edit">
+                <dxb:BarSubItem Content="帮助">
                     <dxb:BarButtonItem x:Name="btnCut" Content="Cut" Glyph="{dx:DXImage Image=Cut_16x16.png}" />
                     <dxb:BarButtonItem x:Name="btnCopy" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" />
                     <dxb:BarButtonItem x:Name="btnPaste" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" />
                 </dxb:BarSubItem>
             </dxb:MainMenuControl>
         </dxb:BarContainerControl>
-        <dxb:BarContainerControl ContainerType="Top" Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="2">
+        <!--<dxb:BarContainerControl ContainerType="Top" Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="2">
             <dxb:ToolBarControl Caption="File" RotateWhenVertical="True">
                 <dxb:BarButtonItemLink BarItemName="btnNew" />
                 <dxb:BarButtonItemLink BarItemName="btnOpen" />
@@ -151,7 +151,7 @@
                 <dxb:BarButtonItemLink BarItemName="btnCopy" />
                 <dxb:BarButtonItemLink BarItemName="btnPaste" />
             </dxb:ToolBarControl>
-        </dxb:BarContainerControl>
+        </dxb:BarContainerControl>-->
         <dxg:TreeListControl Name="myTreeListControl" AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True" Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding Employees}">
             <dxg:TreeListControl.View>
                 <dxg:TreeListView AllowPerPixelScrolling="False" KeyFieldName="ID" ParentFieldName="ParentID" AutoWidth="False" AllowEditing="False" ShowVerticalLines="False" ShowHorizontalLines="False" ShowIndicator="False" ShowColumnHeaders="False"/>

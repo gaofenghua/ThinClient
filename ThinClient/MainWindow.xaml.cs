@@ -59,6 +59,7 @@ namespace ThinClient
             // Button_Click();
 
             CC_Client = new TC4I_Socket_Client(1024,"127.0.0.1",12345,0xFF);
+            CC_Client.OnRemoteCommandReturn += OnRemoteCommandReturn;
         }
 
         private readonly TaskScheduler _syncContextTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
@@ -92,6 +93,39 @@ namespace ThinClient
             cardView2.MoveLastRow();
         }
 
+        private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
+        {
+            CC_Client.RemoteCommand_GetCameraList();
+        }
+
+        public void OnRemoteCommandReturn(object Arg)
+        {
+            MessageBox.Show("Command return");
+            Command_Return CommandReturn = (Command_Return) Arg;
+            switch(CommandReturn.Command)
+            {
+                case Socket_Command.GetCameraList:
+                    Camera_Info[] CameraList = (Camera_Info[]) CommandReturn.Result;
+                    mytree.Clear();
+                    foreach (Camera_Info camera in CameraList)
+                    {
+                        myTree node = new myTree();
+                        node.ID = camera.ID;
+                        node.ParentID = 0;
+                        node.name = camera.Name;
+                        node.ip = "Online";
+                        mytree.Add(node);
+                    }
+                    break;
+            }
+
+            Task.Factory.StartNew(() => UpdateDeviceTree(),
+                    new CancellationTokenSource().Token, TaskCreationOptions.None, _syncContextTaskScheduler);
+        }
+        private void UpdateDeviceTree()
+        {
+            myTreeListControl.RefreshData();
+        }
     }
 
     public class CustomerToColorConverter : IValueConverter

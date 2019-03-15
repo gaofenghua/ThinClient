@@ -14,6 +14,8 @@ namespace TC4I
 {
     class TC4I_Socket_Client
     {
+        public event Action<object> OnRemoteCommandReturn;
+
         public Socket_Status status;
         System.Threading.Timer heartbeat_timer = null;
         int Time_Interval = 3000;
@@ -39,11 +41,14 @@ namespace TC4I
             server_ip = ip;
             server_port = port;
 
-            Socket_Data heartbeat_data = new Socket_Data();
-            heartbeat_data.Data_Type = (int)Socket_Data_Type.Heartbeat;
-            heartbeat_data.strInfo = "My client name";
+            // Initial heartbeat package
+            Socket_Data SocketData = new Socket_Data();
+            SocketData.DataType = Socket_Data_Type.Heartbeat;
+            Heartbeat_Data HeartbeatData = new Heartbeat_Data();
+            HeartbeatData.ClientInfo = "My Client";
+            SocketData.SubData = HeartbeatData;
+            TC4I_Socket.serializeObjToByte(SocketData, out heartbeat_package);
 
-            TC4I_Socket.serializeObjToByte(heartbeat_data, out heartbeat_package);
         }
 
         private void Client_OnClose()
@@ -68,24 +73,43 @@ namespace TC4I
             TC4I_Socket.deserializeByteToObj(rev, out deserializedObj);
             revData = (Socket_Data)deserializedObj;
 
-            switch (revData.Data_Type)
+            switch (revData.DataType)
             {
                 case Socket_Data_Type.Heartbeat:
                     heartbeat = 0;
                     break;
                 case Socket_Data_Type.Camera_Data:
+                    Camera_Data CameraData = (Camera_Data)revData.SubData;
                     List<Customer> customers = CustomerView.Customers;
                     Customer customer = new Customer();
-                    customer.Name = revData.strInfo;
-                    customer.Photo = revData.Photo;
+                    customer.Name = CameraData.strInfo;
+                    customer.Photo = CameraData.Photo;
                     customers.Add(customer);
 
                     Task.Factory.StartNew(Begin);
 
                     //MessageBox.Show(revData.strInfo);
                     break;
+                case Socket_Data_Type.Command_Return:
+                    Client_OnRemoteCommandReturn((Command_Return)revData.SubData);
+                   // Task.Factory.StartNew(Begin);
+                    break;
             }
 
+        }
+
+        public void Client_OnRemoteCommandReturn(Command_Return CommandReturn)
+        {
+            switch(CommandReturn.Command)
+            {
+                case Socket_Command.GetCameraList:
+                    Camera_Info[] CameraList = (Camera_Info[])CommandReturn.Result;
+                    if(OnRemoteCommandReturn != null)
+                    {
+                        OnRemoteCommandReturn(CommandReturn);
+                    }
+                    break;
+            }
         }
         private void Client_OnConnect(bool obj)
         {
@@ -159,6 +183,22 @@ namespace TC4I
             heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
         }
  
+        public bool RemoteCommand_GetCameraList()
+        {
+            Command_Request CommandRequest = new Command_Request();
+            CommandRequest.Command = Socket_Command.GetCameraList;
+            CommandRequest.Arg = null;
+
+            Socket_Data SocketData = new Socket_Data();
+            SocketData.DataType = Socket_Data_Type.Command;
+            SocketData.SubData = CommandRequest;
+
+            byte[] SocketPackage = null;
+            TC4I_Socket.serializeObjToByte(SocketData, out SocketPackage);
+            Send(SocketPackage, 0, SocketPackage.Length);
+
+            return true;
+        }
 
         private readonly TaskScheduler _syncContextTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
         private void SchedulerWork()
@@ -178,7 +218,7 @@ namespace TC4I
             MainWindow mainwin = (MainWindow)Application.Current.MainWindow;
             CardView myTab = mainwin.cardView;
             myTab.MoveLastRow();
-
+            mainwin.myTreeListControl.ItemsSource = null;
         }
     }
 }

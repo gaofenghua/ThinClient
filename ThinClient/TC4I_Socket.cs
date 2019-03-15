@@ -12,18 +12,50 @@ namespace TC4I
 {
     enum Socket_Status { Init, Connecting, Normal, Connect_Failed, Closed };
     [Serializable]
-    enum Socket_Data_Type : int { Heartbeat,Camera_Data };
+    public enum Socket_Data_Type : int { Heartbeat,Camera_Data,Command,Command_Return };
     [Serializable]
-    struct Socket_Data
+    enum Socket_Command { GetCameraList };
+    [Serializable]
+    public struct Socket_Data
     {
-        public Socket_Data_Type Data_Type;
+        public Socket_Data_Type DataType;
+        public object SubData;
+    }
+    [Serializable]
+    struct Heartbeat_Data
+    {
+        public string ClientInfo;
+    }
+    [Serializable]
+    struct Camera_Data
+    {
         public int Index;
         public string strInfo;
-        public int iTest;
         public byte[] Photo;
         public byte[] Photo2;
     }
+    [Serializable]
+    struct Camera_Info
+    {
+        public int ID;
+        public string Name;
+        public string IP;
+        public int Status;
+        public int Flag;
+    }
+    [Serializable]
+    struct Command_Request
+    {
+        public Socket_Command Command;
+        public object Arg;
+    }
 
+    [Serializable]
+    struct Command_Return
+    {
+        public Socket_Command Command;
+        public object Result;
+    }
     class TC4I_Socket
     {
         public bool serializeObjToStr(Object obj, out string serializedStr)
