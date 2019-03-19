@@ -17,7 +17,9 @@
         <local:CustomerToColorConverter x:Key="CustomerToColorConverter"/>
         <local:CustomerToHeaderTextConverter x:Key="CustomerToHeaderTextConverter"/>
         <local:UIDeviceTreeListNodeImageSelector x:Key="DeviceTreeNodeImageSelector"/>
-        
+
+    
+
         <DataTemplate x:Key="cardHeaderTemplate">
             <Border Margin="1" CornerRadius="5" Background="{Binding Path=(dxg:RowData.RowData).Row, RelativeSource={RelativeSource Self}, Converter={StaticResource CustomerToColorConverter}}">
                 <TextBlock Text="{Binding Path=(dxg:RowData.RowData).Row, RelativeSource={RelativeSource Self}, Converter={StaticResource CustomerToHeaderTextConverter}}" Margin="1" Foreground="White" />
@@ -127,6 +129,7 @@
             <RowDefinition Height="300*" />
             <RowDefinition Height="220" />
         </Grid.RowDefinitions>
+       
         <dxb:BarContainerControl ContainerType="Top" Grid.Row="0" Grid.ColumnSpan="3">
             <dxb:MainMenuControl Caption="Main Menu">
                 <dxb:BarSubItem Content="系统">
@@ -153,9 +156,15 @@
                 <dxb:BarButtonItemLink BarItemName="btnPaste" />
             </dxb:ToolBarControl>
         </dxb:BarContainerControl>-->
-        <dxg:TreeListControl Name="myTreeListControl" AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True" Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding Employees}">
+        <dxg:TreeListControl Name="myTreeListControl" AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True" Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding Employees}" MouseDoubleClick="treeListTagsControl_MouseDoubleClick">
             <dxg:TreeListControl.View>
-                <dxg:TreeListView NodeImageSelector="{StaticResource DeviceTreeNodeImageSelector}" AllowPerPixelScrolling="False" KeyFieldName="ID" ParentFieldName="ParentID" AutoWidth="False" AllowEditing="False" ShowVerticalLines="False" ShowHorizontalLines="False" ShowIndicator="False" ShowColumnHeaders="False" ShowNodeImages="True"/>
+                <dxg:TreeListView ShowGridMenu="DeviceTree_ShowGridMenu" NodeImageSelector="{StaticResource DeviceTreeNodeImageSelector}" AllowPerPixelScrolling="False" KeyFieldName="ID" ParentFieldName="ParentID" AutoWidth="False" AllowEditing="False" ShowVerticalLines="False" ShowHorizontalLines="False" ShowIndicator="False" ShowColumnHeaders="False" ShowNodeImages="True">
+                    <dxg:TreeListView.RowCellMenuCustomizations>
+                        <!--<dxb:BarCheckItem Name="checkItem1" Content="Checked" IsChecked="True" dxb:BarItemLinkActionBase.ItemLinkIndex="0" />
+                        <dxb:BarItemLinkSeparator dxb:BarItemLinkActionBase.ItemLinkIndex="1" />
+                        <dxb:BarButtonItem x:Name="btnNew11" Content="更新设备列表" Glyph="{dx:DXImage Image=New_16x16.png}" ItemClick="btnNew_ItemClick"/>-->
+                    </dxg:TreeListView.RowCellMenuCustomizations>
+                </dxg:TreeListView>
             </dxg:TreeListControl.View>
         </dxg:TreeListControl>
         <dxg:GridControl Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2" AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 

@@ -21,6 +21,7 @@ using System.ComponentModel;
 using TC4I;
 using System.Configuration;
 using DevExpress.Xpf.Grid.TreeList;
+using DevExpress.Xpf.Bars;
 
 namespace ThinClient
 {
@@ -135,7 +136,23 @@ namespace ThinClient
             cardView.MoveLastRow();
             cardView2.MoveLastRow();
         }
+        private void DeviceTree_ShowGridMenu(object sender, GridMenuEventArgs e)
+        {
+            var le = e.TargetElement as LightweightCellEditor;
+            if (le == null)
+                return;
+            var d = le.DataContext as TreeListRowData;
+            var item = d.Row as UIDevice;
+            var st = item.name;
+            var b = new BarButtonItem();
+            b.Content = st;
+            b.ItemClick += btnNew_ItemClick;
 
+           
+
+            e.Customizations.Add(b);
+        }
+     
         private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
         {
             if(!CC_Client.RemoteCommand_GetCameraList())
@@ -143,7 +160,13 @@ namespace ThinClient
                 MessageBox.Show("GetCameraList failed, Please check the server connection.");
             }
         }
-
+        private void treeListTagsControl_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            TreeListViewHitInfo info = myTreeListControl.View.CalcHitInfo(e.OriginalSource as DependencyObject);
+            if (!info.InRow)
+                return;
+            MessageBox.Show("ID: " + ((UIDevice)myTreeListControl.View.GetNodeByRowHandle(info.RowHandle).Content).ID);
+        }
         public void OnRemoteCommandReturn(object Arg)
         {
             MessageBox.Show("Command return");
