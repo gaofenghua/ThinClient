@@ -37,6 +37,7 @@ namespace TC4I
             client.OnDisconnect += Client_OnDisconnect;
 
             client.Connect(ip, port);
+            status = Socket_Status.Connecting;
 
             server_ip = ip;
             server_port = port;
@@ -185,6 +186,11 @@ namespace TC4I
  
         public bool RemoteCommand_GetCameraList()
         {
+            if(status != Socket_Status.Normal)
+            {
+                return false;
+            }
+
             Command_Request CommandRequest = new Command_Request();
             CommandRequest.Command = Socket_Command.GetCameraList;
             CommandRequest.Arg = null;

@@ -16,7 +16,8 @@
     <Window.Resources>
         <local:CustomerToColorConverter x:Key="CustomerToColorConverter"/>
         <local:CustomerToHeaderTextConverter x:Key="CustomerToHeaderTextConverter"/>
-
+        <local:UIDeviceTreeListNodeImageSelector x:Key="DeviceTreeNodeImageSelector"/>
+        
         <DataTemplate x:Key="cardHeaderTemplate">
             <Border Margin="1" CornerRadius="5" Background="{Binding Path=(dxg:RowData.RowData).Row, RelativeSource={RelativeSource Self}, Converter={StaticResource CustomerToColorConverter}}">
                 <TextBlock Text="{Binding Path=(dxg:RowData.RowData).Row, RelativeSource={RelativeSource Self}, Converter={StaticResource CustomerToHeaderTextConverter}}" Margin="1" Foreground="White" />
@@ -154,7 +155,7 @@
         </dxb:BarContainerControl>-->
         <dxg:TreeListControl Name="myTreeListControl" AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True" Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding Employees}">
             <dxg:TreeListControl.View>
-                <dxg:TreeListView AllowPerPixelScrolling="False" KeyFieldName="ID" ParentFieldName="ParentID" AutoWidth="False" AllowEditing="False" ShowVerticalLines="False" ShowHorizontalLines="False" ShowIndicator="False" ShowColumnHeaders="False"/>
+                <dxg:TreeListView NodeImageSelector="{StaticResource DeviceTreeNodeImageSelector}" AllowPerPixelScrolling="False" KeyFieldName="ID" ParentFieldName="ParentID" AutoWidth="False" AllowEditing="False" ShowVerticalLines="False" ShowHorizontalLines="False" ShowIndicator="False" ShowColumnHeaders="False" ShowNodeImages="True"/>
             </dxg:TreeListControl.View>
         </dxg:TreeListControl>
         <dxg:GridControl Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2" AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 

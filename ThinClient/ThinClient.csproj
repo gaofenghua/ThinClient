@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icon\axis.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.Data.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Mvvm.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
@@ -47,6 +50,7 @@
       <HintPath>..\..\socket.framework-master\socket.framework\bin\Debug\socket.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -126,6 +130,16 @@
     <Resource Include="Photos\DarleneCatto.jpg" />
     <Resource Include="Photos\EdwardKeck.jpg" />
     <Resource Include="Photos\GeorgeMorrison.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icon\camera.png" />
+    <Resource Include="Icon\server.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icon\axis.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="axis.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
