@@ -12,7 +12,7 @@ namespace TC4I
 {
     enum Socket_Status { Init, Connecting, Normal, Connect_Failed, Closed };
     [Serializable]
-    public enum Socket_Data_Type : int { Heartbeat,Camera_Data,Command,Command_Return };
+    public enum Socket_Data_Type : int { Heartbeat,Camera_Data,Command,Command_Return,Server_Status };
     [Serializable]
     enum Socket_Command { GetCameraList };
     [Serializable]

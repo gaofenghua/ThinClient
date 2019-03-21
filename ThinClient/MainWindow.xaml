@@ -134,13 +134,10 @@
             <dxb:MainMenuControl Caption="Main Menu">
                 <dxb:BarSubItem Content="系统">
                     <dxb:BarButtonItem x:Name="btnNew" Content="更新设备列表" Glyph="{dx:DXImage Image=New_16x16.png}" ItemClick="btnNew_ItemClick"/>
-                    <dxb:BarButtonItem x:Name="btnOpen" Content="Open" Glyph="{dx:DXImage Image=Open_16x16.png}" />
-                    <dxb:BarButtonItem x:Name="btnClose" Content="Close" Glyph="{dx:DXImage Image=Close_16x16.png}" />
+                    <dxb:BarButtonItem x:Name="btnOpen" Content="搜索" Glyph="{dx:DXImage Image=Open_16x16.png}" />
                 </dxb:BarSubItem>
                 <dxb:BarSubItem Content="帮助">
-                    <dxb:BarButtonItem x:Name="btnCut" Content="Cut" Glyph="{dx:DXImage Image=Cut_16x16.png}" />
-                    <dxb:BarButtonItem x:Name="btnCopy" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" />
-                    <dxb:BarButtonItem x:Name="btnPaste" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" />
+                    <dxb:BarButtonItem x:Name="btnCut" Content="关于本系统" Glyph="{dx:DXImage Image=Cut_16x16.png}" />
                 </dxb:BarSubItem>
             </dxb:MainMenuControl>
         </dxb:BarContainerControl>

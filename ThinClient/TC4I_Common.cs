@@ -34,7 +34,7 @@ namespace TC4I
                 return;
             }
 
-            if (index == 2)
+            if (index == -1)
             {
                 return;
             }

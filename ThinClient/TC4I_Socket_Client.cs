@@ -15,12 +15,18 @@ namespace TC4I
     class TC4I_Socket_Client
     {
         public event Action<object> OnRemoteCommandReturn;
+        public event Action<object> DataEvent;
 
         public Socket_Status status;
         System.Threading.Timer heartbeat_timer = null;
         int Time_Interval = 3000;
         int heartbeat = 0;
         public byte[] heartbeat_package = null;
+
+        DateTime First_Reconnect_time = DateTime.MinValue;
+        int Max_Reconnect_times = 5;
+        TimeSpan Min_TimeSpan = TimeSpan.FromMinutes(5);
+        int Reconnect_Times = 0;
 
         public int id = -1;
         public string server_ip=null;
@@ -36,8 +42,7 @@ namespace TC4I
             client.OnClose += Client_OnClose;
             client.OnDisconnect += Client_OnDisconnect;
 
-            client.Connect(ip, port);
-            status = Socket_Status.Connecting;
+            status = Socket_Status.Init;
 
             server_ip = ip;
             server_port = port;
@@ -51,7 +56,14 @@ namespace TC4I
             TC4I_Socket.serializeObjToByte(SocketData, out heartbeat_package);
 
         }
-
+        public void Connect()
+        {
+            if(client != null)
+            {
+                client.Connect(server_ip, server_port);
+                status = Socket_Status.Connecting;
+            }
+        }
         private void Client_OnClose()
         {
             Console.WriteLine($"pack断开");
@@ -63,8 +75,6 @@ namespace TC4I
 
         private void Client_OnReceive(byte[] obj)
         {
-            Console.WriteLine($"pack接收byte[{obj.Length}]");
-
             Parse_Receive_Data(obj);
         }
         public void Parse_Receive_Data(byte[] rev)
@@ -92,11 +102,12 @@ namespace TC4I
                     //MessageBox.Show(revData.strInfo);
                     break;
                 case Socket_Data_Type.Command_Return:
-                    Client_OnRemoteCommandReturn((Command_Return)revData.SubData);
-                   // Task.Factory.StartNew(Begin);
+                    if(DataEvent != null)
+                    {
+                        DataEvent(revData);
+                    }
                     break;
             }
-
         }
 
         public void Client_OnRemoteCommandReturn(Command_Return CommandReturn)
@@ -105,9 +116,9 @@ namespace TC4I
             {
                 case Socket_Command.GetCameraList:
                     Camera_Info[] CameraList = (Camera_Info[])CommandReturn.Result;
-                    if(OnRemoteCommandReturn != null)
+                    if(DataEvent != null)
                     {
-                        OnRemoteCommandReturn(CommandReturn);
+                        DataEvent(CommandReturn);
                     }
                     break;
             }
@@ -125,6 +136,14 @@ namespace TC4I
                 status = Socket_Status.Normal;
 
                 TC4I_Common.PrintLog(0, String.Format("Server Connected, server={0}:{1}",server_ip,server_port));
+            }
+
+            Socket_Data SocketData = new Socket_Data();
+            SocketData.DataType = Socket_Data_Type.Server_Status;
+            SocketData.SubData = status;
+            if(DataEvent != null)
+            {
+                DataEvent(SocketData);
             }
 
             if (heartbeat_timer == null)
@@ -152,10 +171,47 @@ namespace TC4I
         {
             client.Close();
         }
+        public bool Check_Reconnect_TooMany()
+        {
+            if (First_Reconnect_time == DateTime.MinValue)
+            {
+                First_Reconnect_time = DateTime.Now;
+            }
 
+            if (Reconnect_Times > Max_Reconnect_times)
+            {
+                TimeSpan timespan = DateTime.Now - First_Reconnect_time;
+                if (timespan < Min_TimeSpan || Reconnect_Times > Max_Reconnect_times * 3)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public void ReConnect()
         {
+            if (status == Socket_Status.Connecting)
+            {
+                return;
+            }
 
+            if (Check_Reconnect_TooMany() == true)
+            {
+                TC4I_Common.PrintLog(0, String.Format("error: Socket reconnect too frequently, Force close. id={0}. {1} - {2} reconnect {3} times", id, First_Reconnect_time, DateTime.Now, Reconnect_Times));
+
+                Close();
+                status = Socket_Status.Closed;
+                return;
+            }
+
+            Reconnect_Times = Reconnect_Times + 1;
+            status = Socket_Status.Connecting;
+
+            TC4I_Common.PrintLog(0, String.Format("Warning: Socket ReConnecting, client.connected = {0}, id={1}.", client.Connected, id));
+
+            client.Close();
+            Thread.Sleep(500);
+            client.Reconnect(server_ip, server_port);
         }
         public void HeartBeat(object obj)
         {
@@ -173,14 +229,10 @@ namespace TC4I
             if (client.Connected == true)
             {
                 Send(heartbeat_package, 0, heartbeat_package.Length);
-
-                if (id == 20)
-                {
-                    TC4I_Common.PrintLog(2, String.Format("Debugging: HeartBeat sent, client.connected = {0}, status={2}, id={1}.", client.Connected, id, status));
-                }
+                
+                TC4I_Common.PrintLog(2, String.Format("Debugging: HeartBeat sent, client.connected = {0}, status={2}, id={1}.", client.Connected, id, status));
             }
             heartbeat = heartbeat - 1;
-            TC4I_Common.PrintLog(0, String.Format("Heartbeat:"));
             heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
         }
  

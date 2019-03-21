@@ -40,26 +40,6 @@ namespace ThinClient
             //cardView.CardHeaderTemplate = (DataTemplate)this.Resources["cardHeaderTemplate"];
             cardView2.CardHeaderTemplate = (DataTemplate)this.Resources["cardHeaderTemplate"];
 
-            //mytree = new List<myTree>();
-            //myTree node = new myTree();
-            //node.ID = 1;
-            //node.ParentID = 0;
-            //node.name = "AVMS MiddleWare-01";
-            //node.ip = "Online";
-            //mytree.Add(node);
-
-            //myTree node2 = new myTree();
-            //node2.ID = 2;
-            //node2.ParentID = 1;
-            //node2.name = "ACAP camera 01";
-            //node2.ip = "Online";
-            //mytree.Add(node2);
-
-            //mytree.Add(new myTree() { ID = 3, ParentID = 1, name = "ACAP camera 02", ip="Online" });
-
-            //myTreeListControl.ItemsSource = mytree;
-
-            // Button_Click();
             string ServerIP = null;
             int ServerPort = -1;
             string ServerName = null;
@@ -85,8 +65,9 @@ namespace ThinClient
             UIDevice node = new UIDevice();
             node.ID = 0;
             node.ParentID = 0;
-            node.name = "服务器：" + ServerName;
-            node.ip = "Online";
+            node.name = ServerName;
+            node.ip = ServerIP;
+            node.status = "离线1";
             node.DeviceType = Device_Type.Server;
             UIDeviceTree.Add(node);
 
@@ -94,16 +75,15 @@ namespace ThinClient
             node2.ID = 2;
             node2.ParentID = 0;
             node2.name = "ACAP camera 01";
-            node2.ip = "Online";
+            node2.ip = "192.168.1.2";
             node2.DeviceType = Device_Type.Camera;
             UIDeviceTree.Add(node2);
 
-
             myTreeListControl.ItemsSource = UIDeviceTree;
-
-            
+        
             CC_Client = new TC4I_Socket_Client(1024,ServerIP,ServerPort,0xFF);
-//            CC_Client.OnRemoteCommandReturn += OnRemoteCommandReturn;
+            CC_Client.DataEvent += OnSocketDataEvent;
+            CC_Client.Connect();
         }
 
         private readonly TaskScheduler _syncContextTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
@@ -148,14 +128,12 @@ namespace ThinClient
             b.Content = st;
             b.ItemClick += btnNew_ItemClick;
 
-           
-
             e.Customizations.Add(b);
         }
      
         private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
         {
-            if(!CC_Client.RemoteCommand_GetCameraList())
+            if (!CC_Client.RemoteCommand_GetCameraList())
             {
                 MessageBox.Show("GetCameraList failed, Please check the server connection.");
             }
@@ -167,6 +145,36 @@ namespace ThinClient
                 return;
             MessageBox.Show("ID: " + ((UIDevice)myTreeListControl.View.GetNodeByRowHandle(info.RowHandle).Content).ID);
         }
+        public void OnSocketDataEvent(object Arg)
+        {
+            Socket_Data SocketData = (Socket_Data)Arg;
+            switch (SocketData.DataType)
+            {
+                case Socket_Data_Type.Server_Status:
+                    foreach (UIDevice node in UIDeviceTree)
+                    {
+                        if(node.DeviceType == Device_Type.Server)
+                        {
+                            Socket_Status ServerStatus = (Socket_Status)SocketData.SubData;
+                            if(ServerStatus == Socket_Status.Normal)
+                            {
+                                node.status = "连线";
+                            }
+                            else
+                            {
+                                node.status = "离线";
+                            }
+                            
+                        }
+                    }
+                    break;
+                case Socket_Data_Type.Command_Return:
+                    OnRemoteCommandReturn(SocketData.SubData);
+                    break;
+            }
+            Task.Factory.StartNew(() => UpdateDeviceTree(),
+                    new CancellationTokenSource().Token, TaskCreationOptions.None, _syncContextTaskScheduler);
+        }
         public void OnRemoteCommandReturn(object Arg)
         {
             MessageBox.Show("Command return");
@@ -175,15 +183,15 @@ namespace ThinClient
             {
                 case Socket_Command.GetCameraList:
                     Camera_Info[] CameraList = (Camera_Info[]) CommandReturn.Result;
-                    UIDeviceTree.Clear();
+                    UIDeviceTree_Clear();
                     foreach (Camera_Info camera in CameraList)
                     {
                         UIDevice node = new UIDevice();
-                        node.ID = camera.ID;
-                        node.ParentID = 0;
                         node.name = camera.Name;
-                        node.ip = "Online";
-                        UIDeviceTree.Add(node);
+                        node.ip = camera.IP;
+                        node.DeviceType = Device_Type.Camera;
+                        node.status = "Online";
+                        UIDeviceTree_Add(node);
                     }
                     break;
             }
@@ -194,6 +202,40 @@ namespace ThinClient
         private void UpdateDeviceTree()
         {
             myTreeListControl.RefreshData();
+        }
+        public void UIDeviceTree_Clear()
+        {
+            for(int i=UIDeviceTree.Count()-1;i>-1;i--)
+            {
+                if(UIDeviceTree[i].DeviceType == Device_Type.Camera)
+                {
+                    UIDeviceTree.RemoveAt(i);
+                }
+            }
+        }
+        public void UIDeviceTree_Add(UIDevice node)
+        {
+            int ParentNodeID = UIDeviceTree_GetParentID();
+            if(ParentNodeID== -1)
+            {
+                return;
+            }
+
+            node.ParentID = ParentNodeID;
+            node.ID = UIDeviceTree.Count();
+            UIDeviceTree.Add(node);
+        }
+
+        public int UIDeviceTree_GetParentID()
+        {
+            foreach (UIDevice node in UIDeviceTree)
+            {
+                if (node.DeviceType == Device_Type.Server)
+                {
+                    return node.ID;
+                }
+            }
+            return -1;
         }
     }
 
@@ -309,10 +351,11 @@ namespace ThinClient
     {
         public int ID { get; set; }
         public int ParentID { get; set; }
-        public string name { set; get; }
         public string ip { set; get; }
-
+        public string status { set; get; }
+        public string name;
         public Device_Type DeviceType;
+        public int DeviceID;
         public UIDevice()
         {
 
