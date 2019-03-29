@@ -12,7 +12,7 @@ using TC4I;
 
 namespace TC4I
 {
-    class TC4I_Socket_Client
+    public class TC4I_Socket_Client
     {
         public event Action<object> OnRemoteCommandReturn;
         public event Action<object> DataEvent;

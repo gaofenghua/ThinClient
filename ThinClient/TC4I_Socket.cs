@@ -11,11 +11,11 @@ using TransactionServer;
 
 namespace TC4I
 {
-    enum Socket_Status { Init, Connecting, Normal, Connect_Failed, Closed };
+    public enum Socket_Status { Init, Connecting, Normal, Connect_Failed, Closed };
     [Serializable]
     public enum Socket_Data_Type : int { Heartbeat,Camera_Data,Command,Command_Return,Server_Status,Message };
     [Serializable]
-    enum Socket_Command { CloseSocket,GetCameraList,UpdateCameraList };
+    public enum Socket_Command { CloseSocket,GetCameraList,UpdateCameraList };
     [Serializable]
     public struct Socket_Data
     {
@@ -23,12 +23,12 @@ namespace TC4I
         public object SubData;
     }
     [Serializable]
-    struct Heartbeat_Data
+    public struct Heartbeat_Data
     {
         public string ClientInfo;
     }
     [Serializable]
-    struct Camera_Data
+    public struct Camera_Data
     {
         public int Index;
         public string strInfo;
@@ -45,14 +45,14 @@ namespace TC4I
         public ACAP_TYPE Type;
     }
     [Serializable]
-    struct Command_Request
+    public struct Command_Request
     {
         public Socket_Command Command;
         public object Arg;
     }
 
     [Serializable]
-    struct Command_Return
+    public struct Command_Return
     {
         public Socket_Command Command;
         public object Result;

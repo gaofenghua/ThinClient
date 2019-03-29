@@ -32,7 +32,7 @@ namespace ThinClient
     {
         public static List<UIDevice> UIDeviceTree { get; set; }
 
-        private TC4I_Socket_Client CC_Client = null;
+        public TC4I_Socket_Client CC_Client = null;
         public MainWindow()
         {
             InitializeComponent();
