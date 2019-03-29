@@ -83,6 +83,7 @@ namespace ThinClient
         
             CC_Client = new TC4I_Socket_Client(1024,ServerIP,ServerPort,0xFF);
             CC_Client.DataEvent += OnSocketDataEvent;
+            Thread.Sleep(1000);
             CC_Client.Connect();
         }
 
@@ -159,43 +160,67 @@ namespace ThinClient
                             if(ServerStatus == Socket_Status.Normal)
                             {
                                 node.status = "连线";
+                                CC_Client.RemoteCommand_GetCameraList();
                             }
                             else
                             {
                                 node.status = "离线";
                             }
-                            
                         }
                     }
                     break;
                 case Socket_Data_Type.Command_Return:
                     OnRemoteCommandReturn(SocketData.SubData);
                     break;
+                case Socket_Data_Type.Message:
+                    //MessageBox.Show((string)SocketData.SubData);
+                    TC4I_Common.PrintLog(0, String.Format("Remote Message: {0} ", SocketData.SubData));
+                    break;
+                case Socket_Data_Type.Command:
+                    OnRemoteCommand(SocketData.SubData);
+                    break;
             }
             Task.Factory.StartNew(() => UpdateDeviceTree(),
                     new CancellationTokenSource().Token, TaskCreationOptions.None, _syncContextTaskScheduler);
         }
+        public void OnRemoteCommand(object Arg)
+        {
+            Command_Request CommandRequest = (Command_Request)Arg;
+            switch(CommandRequest.Command)
+            {
+                case Socket_Command.CloseSocket:
+                    CC_Client.Close();
+                    break;
+                case Socket_Command.UpdateCameraList:
+                    Camera_Info[] CameraList = (Camera_Info[]) CommandRequest.Arg;
+                    UIDeviceTree_Refresh(CameraList);
+                    break;
+            }
+        }
         public void OnRemoteCommandReturn(object Arg)
         {
-            MessageBox.Show("Command return");
+            //MessageBox.Show("Command return");
             Command_Return CommandReturn = (Command_Return) Arg;
             switch(CommandReturn.Command)
             {
                 case Socket_Command.GetCameraList:
                     Camera_Info[] CameraList = (Camera_Info[]) CommandReturn.Result;
-                    UIDeviceTree_Clear();
-                    foreach (Camera_Info camera in CameraList)
-                    {
-                        UIDevice node = new UIDevice();
-                        node.name = camera.Name;
-                        node.ip = camera.IP;
-                        node.DeviceType = Device_Type.Camera;
-                        node.status = "Online";
-                        UIDeviceTree_Add(node);
-                    }
+                    UIDeviceTree_Refresh(CameraList);
                     break;
             }
-
+        }
+        public void UIDeviceTree_Refresh(Camera_Info[] CameraList)
+        {
+            UIDeviceTree_Clear();
+            foreach (Camera_Info camera in CameraList)
+            {
+                UIDevice node = new UIDevice();
+                node.name = camera.Name;
+                node.ip = camera.IP;
+                node.DeviceType = Device_Type.Camera;
+                node.status = "Online";
+                UIDeviceTree_Add(node);
+            }
             Task.Factory.StartNew(() => UpdateDeviceTree(),
                     new CancellationTokenSource().Token, TaskCreationOptions.None, _syncContextTaskScheduler);
         }

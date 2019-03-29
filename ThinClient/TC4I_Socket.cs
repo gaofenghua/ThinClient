@@ -7,14 +7,15 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System.Reflection;
+using TransactionServer;
 
 namespace TC4I
 {
     enum Socket_Status { Init, Connecting, Normal, Connect_Failed, Closed };
     [Serializable]
-    public enum Socket_Data_Type : int { Heartbeat,Camera_Data,Command,Command_Return,Server_Status };
+    public enum Socket_Data_Type : int { Heartbeat,Camera_Data,Command,Command_Return,Server_Status,Message };
     [Serializable]
-    enum Socket_Command { GetCameraList };
+    enum Socket_Command { CloseSocket,GetCameraList,UpdateCameraList };
     [Serializable]
     public struct Socket_Data
     {
@@ -35,13 +36,13 @@ namespace TC4I
         public byte[] Photo2;
     }
     [Serializable]
-    struct Camera_Info
+    public struct Camera_Info
     {
-        public int ID;
+        public uint ID;
         public string Name;
         public string IP;
-        public int Status;
-        public int Flag;
+        public DEVICE_STATE Status;
+        public ACAP_TYPE Type;
     }
     [Serializable]
     struct Command_Request

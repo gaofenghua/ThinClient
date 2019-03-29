@@ -95,6 +95,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="..\..\LodeStoneEx\project\TransactionServer\Device.cs">
+      <Link>LinkedClass\Device.cs</Link>
+    </Compile>
     <Compile Include="TC4I_Common.cs" />
     <Compile Include="TC4I_Socket.cs" />
     <Compile Include="TC4I_Socket_Client.cs" />
@@ -115,17 +118,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-	<Compile Include="SearchView.xaml.cs">
+    <Compile Include="SearchView.xaml.cs">
       <DependentUpon>SearchView.xaml</DependentUpon>
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="SearchViewModel.cs" />
-	<Compile Include="DateTimeEditor.cs" />
-	<Page Include="Clock.xaml">
+    <Compile Include="DateTimeEditor.cs" />
+    <Page Include="Clock.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-	<Compile Include="Clock.xaml.cs">
+    <Compile Include="Clock.xaml.cs">
       <DependentUpon>Clock.xaml</DependentUpon>
     </Compile>
   </ItemGroup>

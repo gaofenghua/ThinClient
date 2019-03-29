@@ -21,12 +21,14 @@ namespace TC4I
         System.Threading.Timer heartbeat_timer = null;
         int Time_Interval = 3000;
         int heartbeat = 0;
+        bool Stop_Heartbeat_Timer = false;
         public byte[] heartbeat_package = null;
 
         DateTime First_Reconnect_time = DateTime.MinValue;
         int Max_Reconnect_times = 5;
         TimeSpan Min_TimeSpan = TimeSpan.FromMinutes(5);
         int Reconnect_Times = 0;
+        int Connect_Success_Times = 0;
 
         public int id = -1;
         public string server_ip=null;
@@ -71,6 +73,9 @@ namespace TC4I
         private void Client_OnDisconnect()
         {
             Console.WriteLine($"pack中断");
+
+            status = Socket_Status.Connect_Failed;
+            FireEvent_ServerStatusChange();
         }
 
         private void Client_OnReceive(byte[] obj)
@@ -98,27 +103,12 @@ namespace TC4I
                     customers.Add(customer);
 
                     Task.Factory.StartNew(Begin);
-
                     //MessageBox.Show(revData.strInfo);
                     break;
-                case Socket_Data_Type.Command_Return:
-                    if(DataEvent != null)
+                default :
+                    if (DataEvent != null)
                     {
                         DataEvent(revData);
-                    }
-                    break;
-            }
-        }
-
-        public void Client_OnRemoteCommandReturn(Command_Return CommandReturn)
-        {
-            switch(CommandReturn.Command)
-            {
-                case Socket_Command.GetCameraList:
-                    Camera_Info[] CameraList = (Camera_Info[])CommandReturn.Result;
-                    if(DataEvent != null)
-                    {
-                        DataEvent(CommandReturn);
                     }
                     break;
             }
@@ -134,17 +124,11 @@ namespace TC4I
             else
             {
                 status = Socket_Status.Normal;
-
+                Connect_Success_Times += 1;
                 TC4I_Common.PrintLog(0, String.Format("Server Connected, server={0}:{1}",server_ip,server_port));
             }
 
-            Socket_Data SocketData = new Socket_Data();
-            SocketData.DataType = Socket_Data_Type.Server_Status;
-            SocketData.SubData = status;
-            if(DataEvent != null)
-            {
-                DataEvent(SocketData);
-            }
+            FireEvent_ServerStatusChange();
 
             if (heartbeat_timer == null)
             {
@@ -169,7 +153,12 @@ namespace TC4I
 
         public void Close()
         {
+            Stop_Heartbeat_Timer = true;
+            
             client.Close();
+            status = Socket_Status.Closed;
+
+            FireEvent_ServerStatusChange();
         }
         public bool Check_Reconnect_TooMany()
         {
@@ -211,10 +200,22 @@ namespace TC4I
 
             client.Close();
             Thread.Sleep(500);
-            client.Reconnect(server_ip, server_port);
+            if(Connect_Success_Times == 0)
+            {
+                client.Connect(server_ip, server_port);
+            }
+            else
+            {
+                client.Reconnect(server_ip, server_port);
+            }
         }
         public void HeartBeat(object obj)
         {
+            if(Stop_Heartbeat_Timer == true)
+            {
+                return;
+            }
+
             if (heartbeat < -5)
             {
                 if (status != Socket_Status.Connecting)
@@ -258,6 +259,29 @@ namespace TC4I
             return true;
         }
 
+        public void FireEvent_ServerStatusChange()
+        {
+            Socket_Data SocketData = new Socket_Data();
+            SocketData.DataType = Socket_Data_Type.Server_Status;
+            SocketData.SubData = status;
+            if (DataEvent != null)
+            {
+                DataEvent(SocketData);
+            }
+        }
+        public void Client_OnRemoteCommandReturn(Command_Return CommandReturn)
+        {
+            switch (CommandReturn.Command)
+            {
+                case Socket_Command.GetCameraList:
+                    Camera_Info[] CameraList = (Camera_Info[])CommandReturn.Result;
+                    if (DataEvent != null)
+                    {
+                        DataEvent(CommandReturn);
+                    }
+                    break;
+            }
+        }
         private readonly TaskScheduler _syncContextTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
         private void SchedulerWork()
         {
