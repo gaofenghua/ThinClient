@@ -152,22 +152,7 @@ namespace ThinClient
             switch (SocketData.DataType)
             {
                 case Socket_Data_Type.Server_Status:
-                    foreach (UIDevice node in UIDeviceTree)
-                    {
-                        if(node.DeviceType == Device_Type.Server)
-                        {
-                            Socket_Status ServerStatus = (Socket_Status)SocketData.SubData;
-                            if(ServerStatus == Socket_Status.Normal)
-                            {
-                                node.status = "连线";
-                                CC_Client.RemoteCommand_GetCameraList();
-                            }
-                            else
-                            {
-                                node.status = "离线";
-                            }
-                        }
-                    }
+                    OnServerStatusChange(SocketData.SubData);
                     break;
                 case Socket_Data_Type.Command_Return:
                     OnRemoteCommandReturn(SocketData.SubData);
@@ -180,8 +165,28 @@ namespace ThinClient
                     OnRemoteCommand(SocketData.SubData);
                     break;
             }
+           
+        }
+        public void OnServerStatusChange(object Arg)
+        {
+            Socket_Status ServerStatus = (Socket_Status)Arg;
+            foreach (UIDevice node in UIDeviceTree)
+            {
+                if (node.DeviceType == Device_Type.Server)
+                {
+                    if (ServerStatus == Socket_Status.Normal)
+                    {
+                        node.status = "连线";
+                        CC_Client.RemoteCommand_GetCameraList();
+                    }
+                    else
+                    {
+                        node.status = "离线";
+                    }
+                }
+            }
             Task.Factory.StartNew(() => UpdateDeviceTree(),
-                    new CancellationTokenSource().Token, TaskCreationOptions.None, _syncContextTaskScheduler);
+                   new CancellationTokenSource().Token, TaskCreationOptions.None, _syncContextTaskScheduler);
         }
         public void OnRemoteCommand(object Arg)
         {
