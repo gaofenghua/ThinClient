@@ -5,14 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
 using System.IO;
-
+using System.Configuration;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using DevExpress.Mvvm.UI.Interactivity;
 using DevExpress.Xpf.Core.Native;
 using DevExpress.Xpf.Editors;
-
-//using TC4I_Socket;
 using TC4I;
 
 namespace ThinClient
@@ -28,7 +26,10 @@ namespace ThinClient
 
         public ArrayList TypeCollection { get; set; }
 
-        public ArrayList Ip { get; set; }
+        private List<UIDevice> _cameraList;
+        public List<UIDevice> CameraList { get { return _cameraList; } }
+        public UIDevice CurrentCamera { get; set; }
+
         public string Content { get; set; }
         public string Patten { get; set; }
         public DateTime FromDateTime { get; set; }
@@ -38,6 +39,12 @@ namespace ThinClient
 
         public byte[] LiveImage { get; set; }
 
+        private TC4I_Socket_Client SocketClient = null;
+        private string ServerIp = string.Empty;
+        private int ServerPort = 0;
+
+
+        //private UIDevice 
 
         public SearchViewModel()
         {
@@ -48,8 +55,7 @@ namespace ThinClient
                 TypeCollection.Add(key);
             }
 
-            Ip = new ArrayList();
-            Ip.Add("192.168.77.244");
+            _cameraList = MainWindow.UIDeviceTree.Where(cam => cam.DeviceType == Device_Type.Camera).ToList();
 
             Customers = Customer.GetCustomers();
 
@@ -57,8 +63,37 @@ namespace ThinClient
             LiveImage = TC4I_Common.ReadImageFile(base_path + @".\Sample_Image\FullImage_face.jpg");
 
             Content = "Hello, how are you";
+
+            ServerIp = ConfigurationManager.AppSettings["ServerIP"];
+            ServerPort = Int32.Parse(ConfigurationManager.AppSettings["ServerPort"]);
+            SocketClient = new TC4I_Socket_Client(1024, ServerIp, ServerPort, 0xFF);
+            SocketClient.DataEvent += OnReceiveData;
+            SocketClient.Connect();
         }
 
+
+        private void OnReceiveData(Object obj)
+        {
+            Socket_Data SocketData = (Socket_Data)obj;
+
+            if (Socket_Data_Type.Command_Return == SocketData.DataType)
+            {
+                Command_Return ret = (Command_Return)SocketData.SubData;
+                if (Socket_Command.GetCameraList == ret.Command)
+                {
+                    List<Camera_Info> cameras = (List<Camera_Info>)ret.Result;
+                    var onlineCamList = cameras.Where(cam => cam.Status == 2).ToList();
+                    List<UIDevice> uicams = new List<UIDevice>();
+                    onlineCamList.ForEach ( it => 
+                    {
+                        UIDevice uicam = new UIDevice();
+                        uicam.ip = it.IP;
+                        // other info
+                        uicams.Add(uicam);
+                    });
+                }
+            }
+        }
     }
 
 

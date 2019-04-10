@@ -130,9 +130,10 @@
                                     </dxe:ComboBoxEdit>
                                     <TextBlock Grid.Row="1" Text="Device" VerticalAlignment="Center" />
                                     <dxe:ComboBoxEdit Grid.Row="1" Grid.Column="2"
-                                        ItemsSource="{Binding Ip}"
+                                        ItemsSource="{Binding CameraList}"
+                                        DisplayMember="ip"
                                         IsTextEditable="False"
-                                        SelectedItem="{Binding SelectedPath, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedItem="{Binding CurrentCamera, UpdateSourceTrigger=PropertyChanged}"
                                         TextTrimming="CharacterEllipsis"
                                         IsEnabled="{Binding SelectedPaths.Count, Converter={dxmvvm:NumericToBooleanConverter}}"
                                         Margin="{StaticResource verticalSpacing}">
