@@ -12,6 +12,7 @@ using DevExpress.Mvvm.UI.Interactivity;
 using DevExpress.Xpf.Core.Native;
 using DevExpress.Xpf.Editors;
 using TC4I;
+using TransactionServer;
 
 namespace ThinClient
 {
@@ -82,7 +83,7 @@ namespace ThinClient
                 if (Socket_Command.GetCameraList == ret.Command)
                 {
                     List<Camera_Info> cameras = (List<Camera_Info>)ret.Result;
-                    var onlineCamList = cameras.Where(cam => cam.Status == 2).ToList();
+                    var onlineCamList = cameras.Where(cam => cam.Status == DEVICE_STATE.DEVICE_ONLINE).ToList();
                     List<UIDevice> uicams = new List<UIDevice>();
                     onlineCamList.ForEach ( it => 
                     {
