@@ -130,7 +130,7 @@
                                     </dxe:ComboBoxEdit>
                                     <TextBlock Grid.Row="1" Text="Device" VerticalAlignment="Center" />
                                     <dxe:ComboBoxEdit Grid.Row="1" Grid.Column="2"
-                                        ItemsSource="{Binding CameraList}"
+                                        ItemsSource="{Binding CameraList, UpdateSourceTrigger=PropertyChanged}"
                                         DisplayMember="ip"
                                         IsTextEditable="False"
                                         SelectedItem="{Binding CurrentCamera, UpdateSourceTrigger=PropertyChanged}"

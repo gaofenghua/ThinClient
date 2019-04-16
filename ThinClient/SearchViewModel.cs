@@ -13,10 +13,12 @@ using DevExpress.Xpf.Core.Native;
 using DevExpress.Xpf.Editors;
 using TC4I;
 using TransactionServer;
+using DevExpress.Mvvm;
+using System.Diagnostics;
 
 namespace ThinClient
 {
-    public class SearchViewModel
+    public class SearchViewModel : BindableBase
     {
         public enum ACAP_TYPE
         {
@@ -28,7 +30,11 @@ namespace ThinClient
         public ArrayList TypeCollection { get; set; }
 
         private List<UIDevice> _cameraList;
-        public List<UIDevice> CameraList { get { return _cameraList; } }
+        public List<UIDevice> CameraList
+        {
+            get { return _cameraList; }
+            set { SetProperty(ref _cameraList, value, "CameraList"); }
+        }
         public UIDevice CurrentCamera { get; set; }
 
         public string Content { get; set; }
@@ -56,7 +62,7 @@ namespace ThinClient
                 TypeCollection.Add(key);
             }
 
-            _cameraList = MainWindow.UIDeviceTree.Where(cam => cam.DeviceType == Device_Type.Camera).ToList();
+            CameraList = MainWindow.UIDeviceTree.Where(cam => cam.DeviceType == Device_Type.Camera).ToList();
 
             Customers = Customer.GetCustomers();
 
@@ -77,22 +83,25 @@ namespace ThinClient
         {
             Socket_Data SocketData = (Socket_Data)obj;
 
-            if (Socket_Data_Type.Command_Return == SocketData.DataType)
+            //List<UIDevice> uicams = new List<UIDevice>();
+            if (Socket_Data_Type.Command == SocketData.DataType)
             {
-                Command_Return ret = (Command_Return)SocketData.SubData;
-                if (Socket_Command.GetCameraList == ret.Command)
+                List<UIDevice> uicams = new List<UIDevice>();
+                Command_Request ret = (Command_Request)SocketData.SubData;
+                if (Socket_Command.UpdateCameraList == ret.Command)
                 {
-                    List<Camera_Info> cameras = (List<Camera_Info>)ret.Result;
+                    Camera_Info[] cameras = (Camera_Info[])ret.Arg;
                     var onlineCamList = cameras.Where(cam => cam.Status == DEVICE_STATE.DEVICE_ONLINE).ToList();
-                    List<UIDevice> uicams = new List<UIDevice>();
-                    onlineCamList.ForEach ( it => 
-                    {
-                        UIDevice uicam = new UIDevice();
-                        uicam.ip = it.IP;
-                        // other info
-                        uicams.Add(uicam);
-                    });
+                    
+                    onlineCamList.ForEach(it =>
+                  {
+                      UIDevice uicam = new UIDevice();
+                      uicam.ip = it.IP;
+                      // other info
+                      uicams.Add(uicam);
+                  });
                 }
+                this.CameraList = uicams;
             }
         }
     }
