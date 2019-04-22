@@ -86,7 +86,10 @@ namespace TC4I
         {
             Socket_Data revData;
             object deserializedObj = null;
-            TC4I_Socket.deserializeByteToObj(rev, out deserializedObj);
+            if(false == TC4I_Socket.deserializeByteToObj(rev, out deserializedObj))
+            {
+                return;
+            }
             revData = (Socket_Data)deserializedObj;
 
             switch (revData.DataType)
