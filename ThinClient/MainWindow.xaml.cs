@@ -143,6 +143,14 @@ namespace ThinClient
             {
                 MessageBox.Show("GetCameraList failed, Please check the server connection.");
             }
+
+            SearchView m_searchView = new SearchView();
+            SearchViewModel dc = m_searchView.DataContext as SearchViewModel;
+            CC_Client.DataEvent += dc.OnReceiveData;
+            if (false == m_searchView.ShowDialog())
+            {
+                CC_Client.DataEvent -= dc.OnReceiveData;
+            }
         }
         private void treeListTagsControl_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {

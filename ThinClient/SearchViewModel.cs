@@ -51,8 +51,6 @@ namespace ThinClient
         private int ServerPort = 0;
 
 
-        //private UIDevice 
-
         public SearchViewModel()
         {
             TypeCollection = new ArrayList();
@@ -70,16 +68,10 @@ namespace ThinClient
             LiveImage = TC4I_Common.ReadImageFile(base_path + @".\Sample_Image\FullImage_face.jpg");
 
             Content = "Hello, how are you";
-
-            ServerIp = ConfigurationManager.AppSettings["ServerIP"];
-            ServerPort = Int32.Parse(ConfigurationManager.AppSettings["ServerPort"]);
-            SocketClient = new TC4I_Socket_Client(1024, ServerIp, ServerPort, 0xFF);
-            SocketClient.DataEvent += OnReceiveData;
-            SocketClient.Connect();
         }
 
 
-        private void OnReceiveData(Object obj)
+        public void OnReceiveData(Object obj)
         {
             Socket_Data SocketData = (Socket_Data)obj;
 
