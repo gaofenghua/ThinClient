@@ -22,6 +22,7 @@ using TC4I;
 using System.Configuration;
 using DevExpress.Xpf.Grid.TreeList;
 using DevExpress.Xpf.Bars;
+using TransactionServer;
 
 namespace ThinClient
 {
@@ -33,6 +34,10 @@ namespace ThinClient
         public static List<UIDevice> UIDeviceTree { get; set; }
 
         public TC4I_Socket_Client CC_Client = null;
+
+        public string UI_String_Online = "在线";
+        public string UI_String_Offline = "离线";
+        public string UI_String_Unknow = "未知";
         public MainWindow()
         {
             InitializeComponent();
@@ -67,17 +72,17 @@ namespace ThinClient
             node.ParentID = 0;
             node.name = ServerName;
             node.ip = ServerIP;
-            node.status = "离线1";
+            node.status = UI_String_Offline;
             node.DeviceType = Device_Type.Server;
             UIDeviceTree.Add(node);
 
-            UIDevice node2 = new UIDevice();
-            node2.ID = 2;
-            node2.ParentID = 0;
-            node2.name = "ACAP camera 01";
-            node2.ip = "192.168.1.2";
-            node2.DeviceType = Device_Type.Camera;
-            UIDeviceTree.Add(node2);
+            //UIDevice node2 = new UIDevice();
+            //node2.ID = 2;
+            //node2.ParentID = 0;
+            //node2.name = "ACAP camera 01";
+            //node2.ip = "192.168.1.2";
+            //node2.DeviceType = Device_Type.Camera;
+            //UIDeviceTree.Add(node2);
 
             myTreeListControl.ItemsSource = UIDeviceTree;
         
@@ -152,22 +157,7 @@ namespace ThinClient
             switch (SocketData.DataType)
             {
                 case Socket_Data_Type.Server_Status:
-                    foreach (UIDevice node in UIDeviceTree)
-                    {
-                        if(node.DeviceType == Device_Type.Server)
-                        {
-                            Socket_Status ServerStatus = (Socket_Status)SocketData.SubData;
-                            if(ServerStatus == Socket_Status.Normal)
-                            {
-                                node.status = "连线";
-                                CC_Client.RemoteCommand_GetCameraList();
-                            }
-                            else
-                            {
-                                node.status = "离线";
-                            }
-                        }
-                    }
+                    OnServerStatusChange(SocketData.SubData);
                     break;
                 case Socket_Data_Type.Command_Return:
                     OnRemoteCommandReturn(SocketData.SubData);
@@ -180,8 +170,28 @@ namespace ThinClient
                     OnRemoteCommand(SocketData.SubData);
                     break;
             }
+           
+        }
+        public void OnServerStatusChange(object Arg)
+        {
+            Socket_Status ServerStatus = (Socket_Status)Arg;
+            foreach (UIDevice node in UIDeviceTree)
+            {
+                if (node.DeviceType == Device_Type.Server)
+                {
+                    if (ServerStatus == Socket_Status.Normal)
+                    {
+                        node.status = UI_String_Online;
+                        CC_Client.RemoteCommand_GetCameraList();
+                    }
+                    else
+                    {
+                        node.status = UI_String_Offline;
+                    }
+                }
+            }
             Task.Factory.StartNew(() => UpdateDeviceTree(),
-                    new CancellationTokenSource().Token, TaskCreationOptions.None, _syncContextTaskScheduler);
+                   new CancellationTokenSource().Token, TaskCreationOptions.None, _syncContextTaskScheduler);
         }
         public void OnRemoteCommand(object Arg)
         {
@@ -218,7 +228,18 @@ namespace ThinClient
                 node.name = camera.Name;
                 node.ip = camera.IP;
                 node.DeviceType = Device_Type.Camera;
-                node.status = "Online";
+                if(camera.Status == DEVICE_STATE.DEVICE_ONLINE)
+                {
+                    node.status = UI_String_Online;
+                }
+                else if(camera.Status == DEVICE_STATE.DEVICE_OFFLINE)
+                {
+                    node.status = UI_String_Offline;
+                }
+                else
+                {
+                    node.status = UI_String_Unknow;
+                }
                 UIDeviceTree_Add(node);
             }
             Task.Factory.StartNew(() => UpdateDeviceTree(),
