@@ -12,6 +12,11 @@ namespace TC4I
     {
         public static byte[] ReadImageFile(string path)
         {
+            if(false == File.Exists(path))
+            {
+                TC4I_Common.PrintLog(0, String.Format("error: File does not exist: {0} ", path));
+                return null;
+            }
             FileStream fs = File.OpenRead(path); //OpenRead
             int filelength = 0;
             filelength = (int)fs.Length; //获得文件长度 
