@@ -46,10 +46,6 @@ namespace ThinClient
 
         public byte[] LiveImage { get; set; }
 
-        private TC4I_Socket_Client SocketClient = null;
-        private string ServerIp = string.Empty;
-        private int ServerPort = 0;
-
 
         public SearchViewModel()
         {
@@ -64,8 +60,8 @@ namespace ThinClient
 
             Customers = Customer.GetCustomers();
 
-            string base_path = @"E:\BAZZI\GIT\master\LodeStone\src\project\ThinClient\ThinClient";
-            LiveImage = TC4I_Common.ReadImageFile(base_path + @".\Sample_Image\FullImage_face.jpg");
+            string base_path = System.Windows.Forms.Application.StartupPath.ToString();
+            LiveImage = TC4I_Common.ReadImageFile(base_path + @".\Photos\FullImage_face.jpg");
 
             Content = "Hello, how are you";
         }
@@ -75,7 +71,6 @@ namespace ThinClient
         {
             Socket_Data SocketData = (Socket_Data)obj;
 
-            //List<UIDevice> uicams = new List<UIDevice>();
             if (Socket_Data_Type.Command == SocketData.DataType)
             {
                 List<UIDevice> uicams = new List<UIDevice>();
