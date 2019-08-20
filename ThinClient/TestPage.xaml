@@ -1,0 +1,50 @@
+﻿<Page
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ThinClient"
+      xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" x:Class="ThinClient.TestPage"
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+      Title="TestPage">
+
+    <Grid>
+
+        <dxc:ChartControl>
+            <dxc:ChartControl.Legend>
+                <dxc:Legend/>
+            </dxc:ChartControl.Legend>
+            <dxc:ChartControl.Titles>
+                <dxc:Title Content="Cartesian Chart" HorizontalAlignment="Center"/>
+            </dxc:ChartControl.Titles>
+            <dxc:XYDiagram2D>
+                <dxc:XYDiagram2D.Panes>
+                    <dxc:Pane x:Name="pane"/>
+                </dxc:XYDiagram2D.Panes>
+                <dxc:BarSideBySideSeries2D DisplayName="Series 1">
+                    <dxc:SeriesPoint Argument="A" Value="5"/>
+                    <dxc:SeriesPoint Argument="B" Value="2"/>
+                    <dxc:SeriesPoint Argument="C"/>
+                    <dxc:SeriesPoint Argument="D" Value="7"/>
+                    <dxc:SeriesPoint Argument="E" Value="3"/>
+                </dxc:BarSideBySideSeries2D>
+                <dxc:BarSideBySideSeries2D DisplayName="Series 2">
+                    <dxc:SeriesPoint Argument="A" Value="1"/>
+                    <dxc:SeriesPoint Argument="B" Value="3"/>
+                    <dxc:SeriesPoint Argument="C" Value="5"/>
+                    <dxc:SeriesPoint Argument="D" Value="2"/>
+                    <dxc:SeriesPoint Argument="E" Value="7"/>
+                </dxc:BarSideBySideSeries2D>
+                <dxc:AreaSeries2D DisplayName="Series 3" dxc:XYDiagram2D.SeriesPane="{Binding ElementName=pane}">
+                    <dxc:SeriesPoint Argument="A" Value="7"/>
+                    <dxc:SeriesPoint Argument="B" Value="3"/>
+                    <dxc:SeriesPoint Argument="C" Value="2"/>
+                    <dxc:SeriesPoint Argument="D" Value="5"/>
+                    <dxc:SeriesPoint Argument="E" Value="4"/>
+                </dxc:AreaSeries2D>
+            </dxc:XYDiagram2D>
+        </dxc:ChartControl>
+
+    </Grid>
+</Page>
