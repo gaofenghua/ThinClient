@@ -66,9 +66,8 @@
     <Reference Include="DevExpress.Xpf.Grid.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.Grid.v18.2.Core, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.Themes.MetropolisDark.v18.2, Version=18.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="socket.framework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\socket.framework.dll</HintPath>
+    <Reference Include="socket.framework">
+      <HintPath>..\..\socket.framework-master\socket.framework\bin\Debug\socket.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -98,9 +97,16 @@
     <Compile Include="..\..\LodeStoneEx\project\TransactionServer\Device.cs">
       <Link>LinkedClass\Device.cs</Link>
     </Compile>
+    <Compile Include="AttendanceSystem_Main.xaml.cs">
+      <DependentUpon>AttendanceSystem_Main.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TC4I_Common.cs" />
     <Compile Include="TC4I_Socket.cs" />
     <Compile Include="TC4I_Socket_Client.cs" />
+    <Page Include="AttendanceSystem_Main.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
