@@ -13,8 +13,11 @@
 
     <dx:ThemedWindow.Resources>
         <local:UIDeviceTreeListNodeImageSelector x:Key="DeviceTreeNodeImageSelector"/>
+   
     </dx:ThemedWindow.Resources>
 
+  
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="180*" />
@@ -52,8 +55,9 @@
             </dxn:NavBarGroup>
         </dxn:NavBarControl>
 
-        <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2">
-            <Frame Name="frmMain" NavigationUIVisibility="Hidden"></Frame>
+        <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" >
+            <Frame Name="frmMain" NavigationUIVisibility="Hidden" Source="SummaryPage.xaml"/>
+           
         </Grid>
 
     </Grid>

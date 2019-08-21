@@ -11,9 +11,13 @@
       d:DesignHeight="300" d:DesignWidth="300"
       Title="SummaryPage">
 
+    <Page.DataContext>
+        <local:CustomerView/>
+    </Page.DataContext>
+    
     <Grid>
 
-        <dxg:GridControl AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True">
+        <dxg:GridControl AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True" ItemsSource="{Binding Customers}">
             <dxg:GridControl.View>
                 <dxg:TableView ShowTotalSummary="True"/>
             </dxg:GridControl.View>
