@@ -12,12 +12,12 @@
       Title="SummaryPage">
 
     <Page.DataContext>
-        <local:CustomerView/>
+        <local:AS_Employee_View/>
     </Page.DataContext>
     
     <Grid>
 
-        <dxg:GridControl AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True" ItemsSource="{Binding Customers}">
+        <dxg:GridControl Name="my" AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True" >
             <dxg:GridControl.View>
                 <dxg:TableView ShowTotalSummary="True"/>
             </dxg:GridControl.View>

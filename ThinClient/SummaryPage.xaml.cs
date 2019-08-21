@@ -22,7 +22,13 @@ namespace ThinClient
     {
         public SummaryPage()
         {
+            AS_Employee_View b = new AS_Employee_View();
+         
             InitializeComponent();
+
+            AS_Employee_View.EmployeeList.Add(new AS_Employee() { Name = "Gregory S. Price" });
+            my.ItemsSource = AS_Employee_View.EmployeeList;
+           
         }
     }
 }

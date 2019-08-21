@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using TC4I;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace ThinClient
 {
@@ -145,5 +147,24 @@ namespace ThinClient
     public class SmallImage
     {
         public byte[] S_Photo { get; set; }
+    }
+
+    public class AS_Employee
+    {
+        public string Name { get; set; }
+        public string Gender { get; set; }
+        public string Department { get; set; }
+        public DateTime? PunchIn { get; set; }
+        public DateTime? PunchOut { get; set; }
+        public string Status { get; set; }
+    }
+
+    public class AS_Employee_View
+    {
+        public static List<AS_Employee> EmployeeList { get; set; }
+        public AS_Employee_View()
+        {
+            EmployeeList = new List<AS_Employee>();
+        }
     }
 }
