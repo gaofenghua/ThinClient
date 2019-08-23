@@ -7,9 +7,15 @@ using System.IO;
 using TC4I;
 using System.ComponentModel;
 using System.Windows.Data;
+using DevExpress.Mvvm;
+using System.Collections.ObjectModel;
 
 namespace ThinClient
 {
+    public class Global
+    {
+        public static AS_Employee_ViewModel EmployeeViewModel;
+    }
     class DataSource
     {
     }
@@ -159,12 +165,20 @@ namespace ThinClient
         public string Status { get; set; }
     }
 
-    public class AS_Employee_View
+    public class AS_Employee_ViewModel 
     {
-        public static List<AS_Employee> EmployeeList { get; set; }
-        public AS_Employee_View()
+        public ObservableCollection<AS_Employee> _employeeList = new ObservableCollection<AS_Employee>();
+        public ObservableCollection<AS_Employee> EmployeeList
         {
-            EmployeeList = new List<AS_Employee>();
+            get { return this._employeeList; }
+            set { this._employeeList = value; }
         }
+        public AS_Employee_ViewModel()
+        {
+            EmployeeList.Add(new AS_Employee() { Name = "Initial" });
+        }
+
+
+  
     }
 }

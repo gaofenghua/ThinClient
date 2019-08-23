@@ -10,18 +10,18 @@
       dx:ThemeManager.ThemeName="MetropolisDark"
       d:DesignHeight="300" d:DesignWidth="300"
       Title="SummaryPage">
-
-    <Page.DataContext>
-        <local:AS_Employee_View/>
-    </Page.DataContext>
-    
+   
+    <Page.Resources>
+        <CollectionViewSource 
+              Source="{Binding Source={x:Static Application.Current}, Path=Employee_ViewModel}"   
+              x:Key="listingDataView" />
+    </Page.Resources>
+     
     <Grid>
-
-        <dxg:GridControl Name="my" AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True" >
+        <dxg:GridControl Name="GridControl_Summary" AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True" >
             <dxg:GridControl.View>
                 <dxg:TableView ShowTotalSummary="True"/>
             </dxg:GridControl.View>
         </dxg:GridControl>
-
     </Grid>
 </Page>

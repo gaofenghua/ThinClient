@@ -22,10 +22,10 @@ namespace ThinClient
     public partial class AttendanceSystem_Main : DevExpress.Xpf.Core.ThemedWindow
     {
         public int myInt = 0;
+        
         public AttendanceSystem_Main()
         {
             InitializeComponent();
-           
         }
         private void Navigate(string path)
         {
@@ -35,38 +35,20 @@ namespace ThinClient
                 this.frmMain.NavigationService.Navigate(new Uri("TestPage.xaml", UriKind.Relative));
             else
                 this.frmMain.NavigationService.Navigate(new Uri("SummaryPage.xaml", UriKind.Relative));
-            //this.frmMain.NavigationService.Navigate(new Button());
-            Type type = Type.GetType(uri);
-            //if (type != null)
-            //{
-            //    //实例化Page页
-            //    object obj = type.Assembly.CreateInstance(uri);
-            //    UserControl control = obj as UserControl;
-            //    this.frmMain.Content = control;
-
-            //    MainWindow myView = obj as MainWindow;
-            //    //myView.ParentWindow = this;
-            //   // myView.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            //    //myView.Owner = this.frmMain;
-            //    //myView.ShowDialog();
-
-            //    //PropertyInfo[] infos = type.GetProperties();
-            //    //foreach (PropertyInfo info in infos)
-            //    //{
-            //    //    //将MainWindow设为page页的ParentWin
-            //    //    if (info.Name == "ParentWindow")
-            //    //    {
-            //    //        info.SetValue(control, this, null);
-            //    //        break;
-            //    //    }
-            //    //}
-            //}
+  
         }
         private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
         {
             //MessageBox.Show("OOO");
-            Navigate("OL");
-            myInt = myInt + 1;
+            //Navigate("OL");
+            //myInt = myInt + 1;
+           
+            App a = (App)Application.Current;
+            for(int i=0;i<10000;i++)
+            {
+                a.Employee_ViewModel.EmployeeList.Add(new AS_Employee() { Name = "BN CLICK" +i });
+            }
+            
         }
 
         private void AS_TreeList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

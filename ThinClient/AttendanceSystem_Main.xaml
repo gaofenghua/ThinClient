@@ -57,7 +57,6 @@
 
         <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" >
             <Frame Name="frmMain" NavigationUIVisibility="Hidden" Source="SummaryPage.xaml"/>
-           
         </Grid>
 
     </Grid>

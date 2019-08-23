@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.ComponentModel;
 
 namespace ThinClient
 {
@@ -20,15 +21,25 @@ namespace ThinClient
     /// </summary>
     public partial class SummaryPage : Page
     {
+       
         public SummaryPage()
         {
-            AS_Employee_View b = new AS_Employee_View();
-         
+            
             InitializeComponent();
 
-            AS_Employee_View.EmployeeList.Add(new AS_Employee() { Name = "Gregory S. Price" });
-            my.ItemsSource = AS_Employee_View.EmployeeList;
-           
+            App a = (App)Application.Current;
+
+            GridControl_Summary.ItemsSource = a.Employee_ViewModel.EmployeeList;
+
+            //my.ItemsSource = Global.EmployeeViewModel.Data;
+            //Global.EmployeeViewModel.PropertyChanged += myChange; 
+            //my.RefreshData();
+        }
+
+        public void myChange(object sender, PropertyChangedEventArgs e)
+        {
+            GridControl_Summary.RefreshData();
+            return ;
         }
     }
 }
