@@ -13,7 +13,7 @@
    
     <Page.Resources>
         <CollectionViewSource 
-              Source="{Binding Source={x:Static Application.Current}, Path=Employee_ViewModel}"   
+              Source="{Binding Source={x:Static Application.Current}, Path=Employee_ViewModel.EmployeeList}"   
               x:Key="listingDataView" />
     </Page.Resources>
      

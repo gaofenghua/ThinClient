@@ -167,7 +167,7 @@ namespace ThinClient
 
     public class AS_Employee_ViewModel 
     {
-        public ObservableCollection<AS_Employee> _employeeList = new ObservableCollection<AS_Employee>();
+        private ObservableCollection<AS_Employee> _employeeList = new ObservableCollection<AS_Employee>();
         public ObservableCollection<AS_Employee> EmployeeList
         {
             get { return this._employeeList; }
