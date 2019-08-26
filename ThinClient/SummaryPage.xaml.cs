@@ -30,6 +30,7 @@ namespace ThinClient
             App a = (App)Application.Current;
 
             GridControl_Summary.ItemsSource = a.Employee_ViewModel.EmployeeList;
+           
 
             //my.ItemsSource = Global.EmployeeViewModel.Data;
             //Global.EmployeeViewModel.PropertyChanged += myChange; 

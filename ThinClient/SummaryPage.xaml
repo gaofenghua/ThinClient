@@ -19,6 +19,11 @@
      
     <Grid>
         <dxg:GridControl Name="GridControl_Summary" AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True" >
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn Binding="{Binding Name}" FieldName="姓名" HorizontalHeaderContentAlignment="Center"/>
+                <dxg:GridColumn Binding="{Binding Gender}" FieldName="性别" />
+                <dxg:GridColumn Binding="{Binding Department}" FieldName="部门" />
+            </dxg:GridControl.Columns>
             <dxg:GridControl.View>
                 <dxg:TableView ShowTotalSummary="True"/>
             </dxg:GridControl.View>
