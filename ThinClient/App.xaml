@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ThinClient"
              Startup="AppStartup"
-             StartupUri="AttendanceSystem_Main.xaml">
+             StartupUri="MainWindow.xaml">
     <Application.Resources>
          
     </Application.Resources>

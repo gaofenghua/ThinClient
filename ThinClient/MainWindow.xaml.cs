@@ -86,6 +86,12 @@ namespace ThinClient
 
             myTreeListControl.ItemsSource = UIDeviceTree;
         
+            //todo 
+            //test code
+            //ServerIP = "127.0.0.1";
+            //ServerPort = 2000;
+            //
+
             CC_Client = new TC4I_Socket_Client(1024,ServerIP,ServerPort,0xFF);
             CC_Client.DataEvent += OnSocketDataEvent;
             Thread.Sleep(1000);

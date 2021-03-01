@@ -163,6 +163,7 @@ namespace ThinClient
         public DateTime? PunchIn { get; set; }
         public DateTime? PunchOut { get; set; }
         public string Status { get; set; }
+        public bool Mychecked{get;set;}
     }
 
     public class AS_Employee_ViewModel 
