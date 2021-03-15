@@ -56,6 +56,25 @@ namespace TC4I
             }
         }
 
+        public static string m_TxtFile_Name = "";
+        public static string m_TxtFile_FullName = System.Windows.Forms.Application.StartupPath.ToString() + @"\" + m_TxtFile_Name;
+        public static readonly object writeTxtLock = new object();
+        public static void WriteTxtFile(string text)
+        {
+            Trace.WriteLine(text);
+
+            text = DateTime.Now.ToString("HH:mm:ss") + " " + text;
+
+            lock (writeTxtLock)
+            {
+                using (StreamWriter sw = new StreamWriter(m_TxtFile_FullName, true, System.Text.Encoding.UTF8))
+                {
+                    sw.WriteLine(text);
+                    sw.Close();
+                }
+            }
+        }
+
         public ushort[] CRC16Table =
              {
                 0x0000, 0x1189, 0x2312, 0x329B, 0x4624, 0x57AD, 0x6536, 0x74BF,

@@ -92,9 +92,16 @@
     <Compile Include="..\..\LodeStoneEx\project\TransactionServer\Device.cs">
       <Link>LinkedClass\Device.cs</Link>
     </Compile>
+    <Compile Include="LPR_MainWindow.xaml.cs">
+      <DependentUpon>LPR_MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TC4I_Common.cs" />
     <Compile Include="TC4I_Socket.cs" />
     <Compile Include="TC4I_Socket_Client.cs" />
+    <Page Include="LPR_MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
